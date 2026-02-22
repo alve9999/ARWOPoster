@@ -58,58 +58,90 @@
   \fill[primary](0,0.7cm)rectangle(\paperwidth,13.3cm);
   \fill[secondary](0,0)rectangle(\paperwidth,0.7cm);
   \fill[secondary](0,13.3cm)rectangle(\paperwidth,14cm);
-  %% Left graphic: car silhouette with LiDAR
-  \begin{scope}[shift={(6.5cm,7cm)},scale=2.2]
+  %% ── Wide banner scene: car drives left→right along a winding track ──────────
+  %% All coords in cm, origin = bottom-left of header box.
+  %% The path winds across the full ~84 cm width at ~7 cm height (mid-banner).
+
+  %% --- Centerline path (the car follows this) ---
+  %% Starts at x≈3, winds: slight dip, rise, dip, rise to exit right edge
+\draw[white,opacity=0.22,line width=5pt] 
+  plot[smooth,tension=0.55] coordinates {
+    (2,6.4) (6,6.35) (10,5.8) (14,5.9)  (22,7.5) 
+    (30,5.35)  (38,5.4) (46,7.9)
+    (54,6.3) (62,5.35) (70,6.4) (74,7.1)
+     (82,7.5)
+  };
+
+
+  %% --- Macro for a cone triangle (top-view, side-lit) ---
+  %% Blue cones along upper boundary (above centerline ~+2.5 cm)
+  %% Yellow cones along lower boundary (below centerline ~-2.5 cm)
+  %% We place them by hand along the winding path
+
+  %% BLUE cones (upper row)
+  \foreach \cx/\cy in {
+    2/9.8, 6/9.5, 10/8.8, 14/8.3, 18/10.2, 22/10.6, 26/10.4,
+    30/8.5, 34/8.0, 38/8.0, 42/10.8, 46/11.0, 50/10.7,
+    54/8.9, 58/8.0, 62/8.2, 66/8.5, 70/9.3, 74/10.2, 78/10.5, 82/10.8}{
+    \begin{scope}[shift={(\cx,\cy)}]
+        % square base
+        \fill[primary!80] (-0.35,0) rectangle (0.35,0.12);
+
+        % cone body
+        \fill[primary!70] (-0.22,0.12) -- (0.22,0.12) -- (0,1.1) -- cycle;
+
+        % white reflective strip
+        \fill[white] (-0.12,0.55) -- (0.12,0.55) -- (0.07,0.75) -- (-0.07,0.75) -- cycle;
+    \end{scope}
+  }
+
+  %% YELLOW cones (lower row)
+  \foreach \cx/\cy in {
+    4/3.0, 8/3.2, 12/2.8, 16/3.5, 20/4.2, 24/4.4,
+    28/2.6, 32/2.2, 36/2.0, 40/2.8, 44/4.5, 48/4.8,
+    52/4.2, 56/2.8, 60/2.3, 64/2.5, 68/2.8, 72/3.5, 76/4.0, 80/4.2}{
+    \begin{scope}[shift={(\cx,\cy)}]
+        % square base
+        \fill[secondary!80] (-0.35,0) rectangle (0.35,0.12);
+
+        % cone body
+        \fill[secondary!70] (-0.22,0.12) -- (0.22,0.12) -- (0,1.1) -- cycle;
+
+        % white reflective strip
+        \fill[black] (-0.12,0.55) -- (0.12,0.55) -- (0.07,0.75) -- (-0.07,0.75) -- cycle;
+    \end{scope}
+  }
+
+  %% --- Car: exact user-specified graphic, placed at left of banner ---
+  \begin{scope}[shift={(6.5cm,6cm)},scale=1.2]
     \fill[secondary!85](-2,-0.8)--(-1.5,0.9)--(1.5,0.9)--(2,-0.8)--cycle;
     \fill[white!15!primary](-1.1,0.9)--(-0.7,2.0)--(0.7,2.0)--(1.1,0.9)--cycle;
     \fill[white](-1.5,-1.0)circle(0.33); \fill[white](1.5,-1.0)circle(0.33);
     \fill[darkprimary](-1.5,-1.0)circle(0.16); \fill[darkprimary](1.5,-1.0)circle(0.16);
-    \foreach \a in {45,60,75,90,105,120,135,155,175,195,215,235,255,275,295,315}
-      {\draw[secondary,opacity=0.5,line width=0.6pt](0,1.4)--+(\a:1.9);}
+    \foreach \a in {15.00, 11.00, 8.00, 5.00, 3.00, 2.00, 1.67, 1.33, 1.00, 0.67, 0.33, 0.00, -0.33, -0.67, -1.00, -1.33, -1.67, -2.00, -2.33, -2.67, -3.00, -3.33, -3.67, -4.00, -4.33, -4.67, -5.00, -5.33, -5.67, -6.00, -7.00, -8.00, -9.00, -10.00, -11.00, -12.00, -13.00, -14.00, -19.00, -25.00}
+      {\draw[secondary,opacity=0.5,line width=0.6pt](0,1.4)--+(\a:9.9);}
     \fill[secondary](0,1.4)circle(0.12);
-    %% Cone silhouettes
-    \fill[primary!70](-2.5,-0.3)--(-2.3,-0.3)--(-2.4,0.2)--cycle;
-    \fill[secondary!80](2.5,-0.3)--(2.3,-0.3)--(2.4,0.2)--cycle;
-  \end{scope}
-  %% Right graphic: pipeline flow
-  \begin{scope}[shift={(\paperwidth-14cm,7cm)}]
-    \foreach \y/\lbl/\c in {
-      5.5/Perception/primary,
-      4.0/Mapping/primary,
-      2.5/{Path Planning}/primary,
-      1.0/Tracking/primary}{
-      \fill[\c,rounded corners=4pt](-2.8,\y-0.45)rectangle(2.8,\y+0.45);
-      \node[white,font=\small\bfseries]at(0,\y){\lbl};
-    }
-    \foreach \y in {5.0,3.5,2.0}
-      {\draw[-{Stealth[length=6pt]},secondary,line width=1.8pt](0,\y)--(0,\y-0.55);}
-    \node[secondary,font=\tiny]at(3.2,3.25){LiDAR};
-    \draw[secondary,dashed,line width=0.8pt](2.8,5.5)to[out=0,in=90](3.1,3.5);
   \end{scope}
   %% Title text
   \node[white,font=\fontsize{60pt}{68pt}\selectfont\bfseries,anchor=center]
-    at(0.5\paperwidth,10.8cm){LiU Formula Student --- Driverless};
+    at(0.5\paperwidth,10.8cm){Lund Formula Student    Driverless};
   \node[secondary,font=\fontsize{31pt}{38pt}\selectfont,anchor=center]
     at(0.5\paperwidth,8.3cm){LiDAR-Based Autonomous Racing: Perception $\cdot$ SLAM $\cdot$ Path Planning $\cdot$ Tracking};
-  \node[white!75!primary,font=\fontsize{22pt}{28pt}\selectfont\itshape,anchor=center]
-    at(0.5\paperwidth,6.3cm){Intel NUC 13 Pro $\cdot$ Ouster OS1-32 $\cdot$ ROS2 Humble $\cdot$ C++ $\cdot$ CycloneDDS};
 \end{tikzpicture}
 \end{beamercolorbox}}
-
 % ── Footer ────────────────────────────────────────────────────────────────────
 \setbeamertemplate{footline}{%
-\begin{beamercolorbox}[wd=\paperwidth,ht=3.0cm,dp=0.4cm,center]{block title}
+\begin{beamercolorbox}[wd=1.0\paperwidth,ht=3.0cm,dp=0.4cm]{block title}
 \begin{tikzpicture}[remember picture,overlay]
   \fill[secondary](0,0)rectangle(\paperwidth,3.4cm);
   \node[darkprimary,font=\normalsize\bfseries]at(0.5\paperwidth,2.1cm){%
-    Leonid Meledin (DL Manager) $\cdot$
-    Alve Lindell (SW) $\cdot$
-    Rasmus Larsen (SW) $\cdot$
-    Simon Ohlstenious Ottoson (HW) $\cdot$
-    Dante Neckmar (HW)};
-  \node[darkprimary!80,font=\small]at(0.5\paperwidth,0.9cm){%
-    K. Chen, R. Nemiroff and B. T. Lopez, ``Direct LiDAR-Inertial Odometry,'' ICRA 2023 $\cdot$
-    LineFit Ground Removal $\cdot$ DBSCAN $\cdot$ GraphSLAM/ISAM2 (GTSAM) $\cdot$ Delaunay Triangulation $\cdot$ Dijkstra};
+    Alve Lindell (Manager) $\cdot$
+    William Andersson (SW) $\cdot$
+    Felix Hellborg (SW) $\cdot$
+    Ahmad Hamid (SW) $\cdot$
+    Lucas Bertman (SW) $\cdot$
+    Tommaso Batori (Controls) $\cdot$
+    Diego Loayza (Controls)};
 \end{tikzpicture}
 \end{beamercolorbox}}
 
@@ -162,78 +194,28 @@
 %% ── Row 1: Hardware | LiDAR Sensor | LIO/SLAM ───────────────────────────────
 \begin{columns}[t,totalwidth=\textwidth]
 
-%% ─ HARDWARE ──────────────────────────────────────────────────────────────────
-\begin{column}{0.248\textwidth}
-\begin{beamercolorbox}[rounded=true,sep=0.30cm,wd=\linewidth]{block title}
-  \large\bfseries Hardware Platform
-\end{beamercolorbox}
-\begin{beamercolorbox}[rounded=true,sep=0.38cm,wd=\linewidth]{block body}
-
-  \begin{tcolorbox}[pbox]
-    {\color{primary}\bfseries Intel NUC 13 Pro}\\[3pt]
-    \small
-    Intel Core i7 CPU (integrated graphics)\\
-    32 GB RAM\\
-    Ubuntu 22.04 LTS\\[3pt]
-    Software stack is \textbf{CPU-intensive} --- no GPU required.
-  \end{tcolorbox}
-
-  \vspace{0.35cm}
-  \begin{tcolorbox}[pbox]
-    {\color{primary}\bfseries Software Stack}\\[3pt]
-    \small
-    \textbf{ROS2 Humble} middleware\\
-    \textbf{CycloneDDS} for transport\\
-    \textbf{C++} throughout for speed\\
-    \quad(except CAN comm. \& state machine)
-  \end{tcolorbox}
-
-  \vspace{0.35cm}
-  % Hardware integration diagram
-  \centering
-  \begin{tikzpicture}[node distance=0.55cm,scale=0.88]
-    \tikzstyle{hw}=[fill=primary,text=white,rounded corners=4pt,
-      minimum width=3.8cm,minimum height=0.58cm,align=center,font=\small\bfseries]
-    \tikzstyle{sw}=[fill=secondary,text=darkprimary,rounded corners=4pt,
-      minimum width=3.8cm,minimum height=0.58cm,align=center,font=\small\bfseries]
-    \node[hw](lidar){Ouster OS1-32};
-    \node[hw,below=0.38cm of lidar](imu){IMU};
-    \node[sw,below=0.38cm of imu](nuc){Intel NUC 13 Pro};
-    \node[hw,below=0.38cm of nuc](steer){Steering Actuator};
-    \node[hw,below=0.38cm of steer](brake){Brake Actuator};
-    \node[hw,below=0.38cm of brake](throttle){Throttle (ECU)};
-    \draw[-{Stealth[length=5pt]},primary,line width=1.2pt](lidar)--(imu);
-    \draw[-{Stealth[length=5pt]},primary,line width=1.2pt](imu)--(nuc);
-    \draw[-{Stealth[length=5pt]},secondary!70!darkgray,line width=1.2pt](nuc)--(steer);
-    \draw[-{Stealth[length=5pt]},secondary!70!darkgray,line width=1.2pt](nuc.south)--(brake.north);
-    \draw[-{Stealth[length=5pt]},secondary!70!darkgray,line width=1.2pt](brake)--(throttle);
-    \draw[secondary!60!darkgray,dashed,line width=0.8pt]
-      (nuc.east)--++(0.6,0)|-(throttle.east);
-    \node[accentgray,font=\scriptsize]at(2.6,-3.2){CAN bus};
-  \end{tikzpicture}
-
-  \vspace{0.35cm}
-  \begin{tcolorbox}[pbox]
-    {\color{primary}\bfseries Team}\\[4pt]
-    \small
-    \textbf{Leonid Meledin} --- DL Manager\\
-    \textbf{Alve Lindell} --- SW\\
-    \textbf{Rasmus Larsen} --- SW\\
-    \textbf{Simon O. Ottoson} --- HW Integration\\
-    \textbf{Dante Neckmar} --- HW Integration
-  \end{tcolorbox}
-
-\end{beamercolorbox}
-\end{column}
-
 %% ─ LIDAR SENSOR ──────────────────────────────────────────────────────────────
 \begin{column}{0.248\textwidth}
-\begin{beamercolorbox}[rounded=true,sep=0.30cm,wd=\linewidth]{block title}
-  \large\bfseries Ouster OS1-32 LiDAR
-\end{beamercolorbox}
-\begin{beamercolorbox}[rounded=true,sep=0.38cm,wd=\linewidth]{block body}
 
-  \centering
+\begin{beamercolorbox}[rounded=true,sep=0.30cm,wd=\linewidth]{block title}
+  \large\bfseries Main Sensors
+
+\end{beamercolorbox}
+
+\begin{beamercolorbox}[rounded=true,sep=0.38cm,wd=\linewidth]{block body}
+\centering
+
+  \begin{tcolorbox}[pbox]
+    {\color{primary}\bfseries Hesai Pandar40P}\\[3pt]
+    \small
+    $\bullet$ 40 channels, 360° horizontal FoV, 10 Hz scan rate\\
+    $\bullet$ Range up to 200 m, with high accuracy and resolution\\
+    $\bullet$ Vertical FoV concentrated around -6° to +2° degrees \to perfect for seeing cones\\
+    $\bullet$ Horizontal FoV partially obstructed by nose cone $\to$ only ~170° usable\\
+    $\bullet$ No built-in IMU $\to$ separate INS unit\\
+    $\bullet$ GPS timestamp synchronization for accurate sensor fusion\\
+    $\bullet$ Mounted at the front of the car \to maximum visability
+  \end{tcolorbox}
   \begin{tikzpicture}[scale=0.82]
     \draw[primary,opacity=0.10,line width=1pt](0,0)ellipse(4.0cm and 1.52cm);
     \draw[primary,opacity=0.18,line width=1pt](0,0)ellipse(3.3cm and 1.25cm);
@@ -243,65 +225,226 @@
     \draw[primary,opacity=0.80,line width=1pt](0,0)ellipse(0.8cm and 0.30cm);
     \fill[darkprimary](-0.34,-0.34)rectangle(0.34,0.34);
     \fill[secondary](-0.20,0.34)rectangle(0.20,0.82);
-    \node[white,font=\tiny\bfseries]at(0,0){OS1};
     % Only front 90 deg (nose cone constraint)
-    \foreach \a in {-45,-30,-15,0,15,30,45}
-      {\draw[secondary,opacity=0.65,line width=1.2pt](0,0.1)--+(\a:3.6);}
-    \foreach \a in {-180,-165,...,-60,60,75,...,180}
-      {\draw[primary!40,opacity=0.25,line width=0.4pt](0,0.1)--+(\a:3.6);}
+    \foreach \a in {-85,-70,-55,-40,-25,-10,0,10,25,40,55,70,85}
+        {\draw[secondary,opacity=0.65,line width=1.2pt](0,0.1)--+(\a:3.6);}
+    \foreach \a in {-180,-165,...,-95,95,110,...,180}
+        {\draw[primary!40,opacity=0.25,line width=0.4pt](0,0.1)--+(\a:3.6);}
     % Shade used FOV
     \fill[secondary,opacity=0.08]
       (0,0.1)--(-45:3.6)arc(-45:45:3.6)--(0,0.1);
-    \node[secondary!70!darkgray,font=\scriptsize\bfseries]at(0,2.8){Used FOV (90\textdegree)};
+    \node[secondary!70!darkgray,font=\scriptsize\bfseries]at(0,2.8){Used FOV (~170\textdegree)};
     \node[accentgray,font=\scriptsize]at(-3.2,0.6){Unused};
-    \node[accentgray,font=\small]at(0,-1.65){Top view --- 32-channel scan rings};
+    \node[accentgray,font=\small]at(0,-1.65){Top view --- 40-channel scan rings};
+  \end{tikzpicture}
+
+  \begin{tcolorbox}[pbox]
+    {\color{primary}\bfseries Movella Xsense MTI-680G}\\[3pt]
+    \small
+    $\bullet$ Buliltin 9-axis IMU\\
+    $\bullet$ High-rate (up to 400 Hz) inertial measurements\\
+    $\bullet$ GPS antenna for timestamp synchronization\\
+    $\bullet$ RTK for ground truth validation
+  \end{tcolorbox}
+  \begin{tikzpicture}[>=Stealth, font=\sffamily\small, scale=1.9]
+
+    \definecolor{imucolor}{RGB}{255,248,210}
+    \definecolor{axisblue}{RGB}{30,100,200}
+    \definecolor{axisred}{RGB}{200,40,40}
+    \definecolor{axisgreen}{RGB}{20,150,60}
+    \definecolor{magpurple}{RGB}{140,40,180}
+    \definecolor{gpsgreen}{RGB}{30,150,80}
+
+    %% IMU box
+    \draw[thick, fill=imucolor, rounded corners=4pt]
+        (-0.7,-0.6) rectangle (0.7,0.6);
+
+    %% Body frame axes
+    \draw[->, very thick, axisblue]
+        (0,0) -- (3.0,0) node[right] {$x$};
+    \draw[->, very thick, axisgreen]
+        (0,0) -- (0,2.6) node[above] {$z$};
+    \draw[->, very thick, axisred]
+        (0,0) -- (-0.9,-1.5) node[below left] {$y$};
+
+    %% Linear accelerations (dashed)
+    \draw[->, thick, axisblue, dashed]
+        (0,0) -- (1.5,0) node[below] {$a_x$};
+    \draw[->, thick, axisgreen, dashed]
+        (0,0) -- (0,1.4) node[right] {$a_z$};
+    \draw[->, thick, axisred, dashed]
+        (0,0) -- (-0.45,-0.75) node[left] {$a_y$};
+
+    %% --- Angular velocities as circular arrows ---
+    \draw[axisred!80, thick, ->]
+        (-0.4,-1.4)
+        arc[start angle=0,end angle=270,
+            x radius=0.45, y radius=0.45];
+
+    \node[axisred!80, font=\scriptsize\bfseries]
+        at (-1.8,-0.8) {Pitch};
+
+    \draw[axisblue!80, thick]
+        (2.6,0.55) arc[start angle=90,end angle=270,
+        x radius=0.4, y radius=0.55];
+    \draw[axisblue!80, thick, ->]
+        (2.6,-0.55) arc[start angle=-90,end angle=-20,
+        x radius=0.4, y radius=0.55];
+    \node[axisblue!80, font=\scriptsize\bfseries]
+        at (3.15,0.8) {Roll};
+
+    \draw[axisgreen!80, thick]
+        (-0.55,2.2) arc[start angle=180,end angle=360,
+        x radius=0.55, y radius=0.4];
+    \draw[axisgreen!80, thick, ->]
+        (0.55,2.2) arc[start angle=0,end angle=40,
+        x radius=0.55, y radius=0.4];
+    \node[axisgreen!80, font=\scriptsize\bfseries]
+        at (-1.2,2.4) {Yaw};
+
+    %% --- Magnetometer vector (cleaner placement) ---
+    \draw[->, thick, magpurple, dotted]
+        (0,0) -- (-1.2,0.9);
+    \node[magpurple, font=\scriptsize] at (-1.3,1.0)
+        {$\vec{B}$};
+
+    %% --- GPS antenna ---
+    \draw[thick, black!60] (1.8, 0.4) -- (1.8, 1.5);
+    \draw[thick, fill=gpsgreen!30] (1.5,1.5) -- (2.1,1.5) --
+        (2.0,1.85) -- (1.6,1.85) -- cycle;
+
+    \foreach \r in {0.3, 0.55, 0.80}{
+        \draw[orange!80]
+            ($(1.8,1.95)+(-\r*0.5, \r*0.3)$)
+            arc (145:35:\r*0.6);
+    }
+    \node[gpsgreen!70!black, font=\scriptsize] at (1.8,0.2) {GPS};
+
+    %% Rate label
+    \node[fill=yellow!15, draw=black!30, rounded corners=3pt,
+        font=\scriptsize, inner sep=3pt] at (0,-2.2)
+        {\textbf{400 Hz} inertial measurements};
+
+  \end{tikzpicture}
+  \begin{tcolorbox}[pbox]
+    {\color{primary}\bfseries Other Sensors}\\[3pt]
+    \small
+    $\bullet$ 4x Wheel speed\\
+    $\bullet$ Steering angle sensor\\
+    $\bullet$ Torque at each wheel\\
+    $\bullet$ Brake pressure sensor
+  \end{tcolorbox}
+  \begin{tcolorbox}[ybox]
+    \small\color{darkprimary}
+    \textbf{Rationale and Caveats:} Using LiDAR only gives very accurate cone detection, localization and
+    allows us to run the entier pipeline on CPU. However, it means that reliable color detection is not possible,
+    which makes path planning signicantly more challenging. Adding a camera would allow us to also detect cone colors,
+    but due to the accuracy of our pathplanning the complexity added by a camera would not be worth it.
+  \end{tcolorbox}
+  \end{beamercolorbox}
+\end{column}
+%% ─ PERCEPTION ────────────────────────────────────────────────────────────────
+\begin{column}{0.248\textwidth}
+\begin{beamercolorbox}[rounded=true,sep=0.30cm,wd=\linewidth]{block title}
+  \large\bfseries Perception Pipeline
+\end{beamercolorbox}
+\begin{beamercolorbox}[rounded=true,sep=0.38cm,wd=\linewidth]{block body}
+  \centering
+
+  \begin{tcolorbox}[pbox]
+    {\color{primary}\bfseries Ground Removal --- LineFit}\\[3pt]
+    \small
+    Bins point cloud in \textbf{polar coordinates},
+    then uses \textbf{RANSAC} to fit lines between bins.
+    Ground points are removed; remainder is the obstacle cloud.\\
+    $\bullet$ Compared to simpler ground removal this can handle non planar ground
+  \end{tcolorbox}
+\vspace{0.9cm}
+\centering
+\begin{tikzpicture}[scale=2.58]
+
+    % Ground line
+    \draw[secondary,line width=2pt](-3.5,0.3)--(3.5,0.3);
+
+    % Ground points
+    \foreach \x in {-3.5,-3.4,...,3.5} {
+        \pgfmathsetmacro{\dx}{(rand*0.04-0.02)}
+        \pgfmathsetmacro{\dy}{(rand*0.02-0.01)}
+        \fill[accentgray,opacity=0.5] (\x+\dx,0.3+\dy) circle(0.05);
+    }
+
+    % Function to draw a LiDAR-style cone with noise
+    % #1: x-center, #2: base y, #3: height, #4: base half-width, #5: number of scan lines, #6: color
+    \newcommand{\lidarcone}[6]{%
+    \foreach \i in {0,...,#5} {%
+        \pgfmathsetmacro{\y}{#2 + \i*(#3/#5)} % height of this scan line
+        \pgfmathsetmacro{\halfwidth}{#4*(#5-\i)/#5} % taper width
+        % number of points proportional to width
+        \pgfmathtruncatemacro{\npts}{int(2*\halfwidth*10)+1}
+        \foreach \j in {0,...,\npts} {%
+        \pgfmathsetmacro{\xp}{#1 - \halfwidth + \j*2*\halfwidth/\npts}
+        % add random noise
+        \pgfmathsetmacro{\dx}{(rand*0.02-0.01)}
+        \pgfmathsetmacro{\dy}{(rand*0.02-0.01)}
+        \fill[#6] (\xp+\dx,\y+\dy) circle(0.07);
+        }%
+    }%
+    }
+
+    % Draw cones with noise
+    \lidarcone{-2.3}{0.5}{0.5}{0.2}{2}{primary}   % primary cone 1
+    \lidarcone{0.6}{0.5}{0.5}{0.2}{2}{primary}    % primary cone 2
+    \lidarcone{1.8}{0.5}{0.5}{0.2}{2}{secondary}  % secondary cone
+
+    % Labels
+    \node[accentgray,font=\scriptsize] at (0,0.15) {Ground (removed)};
+
+\end{tikzpicture}
+
+  \vspace{0.3cm}
+  \begin{tcolorbox}[pbox]
+    {\color{primary}\bfseries Clustering}\\[3pt]
+    \small
+    Clusters obstacle cloud to extract distinct objects after removing the ground.\\[3pt]
+    Algorithm: \textbf{Euclidean clustering}\\
+    $\bullet$ Cluster by Euclidean distance\\
+    $\bullet$ Efficient for large point clouds\\
+    $\bullet$ Works well for well-separated objects like cones\\
+    $\bullet$ DBSCAN is unnecessary due to clear cone shapes and worse performance\\
+    \textbf{Cone classification} by shape constraints:\\
+    $\bullet$ Height: 2--40 cm\\
+    $\bullet$ Radius: 17 cm\\
+    $\bullet$ Any cluster that fits these constraints is classified as a cone\\
+    $\bullet$ False positives are filtered out in SLAM since multiple observations of the same cone are required to create a landmark
+  \end{tcolorbox}
+
+  \vspace{0.3cm}
+  % Clustering diagram
+  \begin{tikzpicture}[scale=2.9]
+    % Cluster 1 (blue)
+    \foreach \x/\y in {-2.4/0.8,-2.2/1.1,-2.0/0.9,-2.3/1.3,-2.1/0.7}
+      {\fill[primary,opacity=0.85](\x,\y)circle(0.09);}
+    \draw[primary,line width=1.2pt,dashed,rounded corners=8pt]
+      (-2.6,0.55)rectangle(-1.8,1.5);
+    \node[primary,font=\scriptsize\bfseries]at(-2.2,1.7){Cluster A};
+    % Cluster 2 (yellow)
+    \foreach \x/\y in {1.5/0.9,1.7/1.2,1.9/0.8,1.6/1.4,2.0/1.1}
+      {\fill[secondary,opacity=0.85](\x,\y)circle(0.09);}
+    \draw[secondary!70!darkgray,line width=1.2pt,dashed,rounded corners=8pt]
+      (1.3,0.55)rectangle(2.2,1.6);
+    \node[secondary!70!darkgray,font=\scriptsize\bfseries]at(1.75,1.8){Cluster B};
+    % Noise
+    \foreach \x/\y in {-0.5/1.5,0.3/0.7,-1.0/0.5,0.8/1.8}
+      {\fill[accentgray,opacity=0.5](\x,\y)circle(0.07);}
+    \node[accentgray,font=\scriptsize]at(-0.1,0.3){noise};
   \end{tikzpicture}
 
   \vspace{0.3cm}
-  \begin{tabular}{>{\bfseries}lc}
-    \toprule
-    \thead{Specification} & \thead{Value}\\
-    \midrule
-    \trA{Channels}          & \trA{32}\\
-    \trB{Horizontal FoV}    & \trB{360°}\\
-    \trA{Used FoV (nose)}   & \trA{90°}\\
-    \trB{Scan rate}         & \trB{10 Hz}\\
-    \trA{Points / scan}     & \trA{65\,536}\\
-    \trB{Range (90\% det.)} & \trB{100--170 m}\\
-    \bottomrule
-  \end{tabular}
-
-  \vspace{0.35cm}
   \begin{tcolorbox}[ybox]
-    {\color{darkprimary}\bfseries Pros}\\[2pt]
-    \small Long range for high-speed scenarios\\
-    Good horizontal FoV
+    \small\color{darkprimary}
+    \textbf{Challenge:} Noisy measurements, partial observations, noisy pose
+    $\to$ need \textbf{SLAM} to find ``real'' cone positions
   \end{tcolorbox}
-
-  \vspace{0.25cm}
-  \begin{tcolorbox}[pbox]
-    {\color{primary}\bfseries Cons \& Mitigation}\\[2pt]
-    \small Low vertical resolution $\to$ compensated by
-    \textbf{scan aggregation} (10 scans at 1\,s accumulation)\\[3pt]
-    Only $\approx$1/4 of FoV used (nose cone obstruction)
-  \end{tcolorbox}
-
-  \vspace{0.35cm}
-  % Scan aggregation diagram
-  \begin{tikzpicture}[scale=0.88]
-    \foreach \i in {0,1,...,9}{
-      \pgfmathsetmacro{\xoff}{\i*0.18}
-      \pgfmathsetmacro{\yoff}{\i*0.06}
-      \pgfmathsetmacro{\op}{0.3+\i*0.07}
-      \fill[primary,opacity=\op,rounded corners=2pt]
-        (\xoff,-0.3+\yoff)rectangle(\xoff+3.2,0.3+\yoff);
-    }
-    \node[white,font=\scriptsize\bfseries]at(1.7,0.54){Aggregated map (10 scans)};
-    \draw[-{Stealth},secondary,line width=1.5pt](3.7,0.3)--(4.5,0.3);
-    \fill[secondary!30,rounded corners=2pt](4.5,-0.3)rectangle(7.5,0.9);
-    \node[darkprimary,font=\scriptsize\bfseries,align=center]at(6.0,0.3){Denser\\point cloud};
-    \node[accentgray,font=\scriptsize]at(3.5,-0.65){Scan aggregation @ 10 Hz};
-  \end{tikzpicture}
 
 \end{beamercolorbox}
 \end{column}
@@ -388,82 +531,6 @@
 \end{beamercolorbox}
 \end{column}
 
-%% ─ PERCEPTION ────────────────────────────────────────────────────────────────
-\begin{column}{0.248\textwidth}
-\begin{beamercolorbox}[rounded=true,sep=0.30cm,wd=\linewidth]{block title}
-  \large\bfseries Perception Pipeline
-\end{beamercolorbox}
-\begin{beamercolorbox}[rounded=true,sep=0.38cm,wd=\linewidth]{block body}
-
-  \begin{tcolorbox}[pbox]
-    {\color{primary}\bfseries Ground Removal --- LineFit}\\[3pt]
-    \small
-    Bins point cloud in \textbf{polar coordinates},
-    then uses \textbf{RANSAC} to fit lines between bins.
-    Ground points are removed; remainder is the obstacle cloud.
-  \end{tcolorbox}
-
-  \vspace{0.3cm}
-  % Ground removal visual
-  \centering
-  \begin{tikzpicture}[scale=0.88]
-    % Ground line
-    \draw[secondary,line width=2pt](-3.5,0.3)to[out=5,in=175](3.5,0.4);
-    % Ground points
-    \foreach \x/\y in {-3.2/0.25,-2.6/0.28,-2.0/0.30,-1.4/0.31,
-                        -0.8/0.32,-0.2/0.33,0.4/0.34,1.0/0.35,
-                         1.6/0.36,2.2/0.37,2.8/0.38,3.2/0.39}
-      {\fill[accentgray,opacity=0.5](\x,\y)circle(0.07);}
-    % Obstacle points (cones)
-    \foreach \x/\y in {-2.5/1.2,-2.3/0.9,-2.1/1.4,1.5/1.0,1.7/1.3,1.9/0.8}
-      {\fill[primary](\x,\y)circle(0.09);}
-    \foreach \x/\y in {0.5/1.1,0.7/0.85,0.9/1.3}
-      {\fill[secondary](\x,\y)circle(0.09);}
-    \node[accentgray,font=\scriptsize]at(0,-0.2){Ground (removed)};
-    \node[primary,font=\scriptsize]at(-1.8,1.7){Blue cones};
-    \node[secondary!70!darkgray,font=\scriptsize]at(1.4,1.7){Yellow};
-  \end{tikzpicture}
-
-  \vspace{0.3cm}
-  \begin{tcolorbox}[pbox]
-    {\color{primary}\bfseries Clustering --- DBSCAN ($O(n\log n)$)}\\[3pt]
-    \small
-    Clusters obstacle cloud; handles arbitrary geometry.\\[3pt]
-    \textbf{Cone classification} by shape constraints:\\
-    $\bullet$ Height: 2--40 cm\\
-    $\bullet$ Radius: 17.3 cm
-  \end{tcolorbox}
-
-  \vspace{0.3cm}
-  % Clustering diagram
-  \begin{tikzpicture}[scale=0.9]
-    % Cluster 1 (blue)
-    \foreach \x/\y in {-2.4/0.8,-2.2/1.1,-2.0/0.9,-2.3/1.3,-2.1/0.7}
-      {\fill[primary,opacity=0.85](\x,\y)circle(0.09);}
-    \draw[primary,line width=1.2pt,dashed,rounded corners=8pt]
-      (-2.6,0.55)rectangle(-1.8,1.5);
-    \node[primary,font=\scriptsize\bfseries]at(-2.2,1.7){Cluster A};
-    % Cluster 2 (yellow)
-    \foreach \x/\y in {1.5/0.9,1.7/1.2,1.9/0.8,1.6/1.4,2.0/1.1}
-      {\fill[secondary,opacity=0.85](\x,\y)circle(0.09);}
-    \draw[secondary!70!darkgray,line width=1.2pt,dashed,rounded corners=8pt]
-      (1.3,0.55)rectangle(2.2,1.6);
-    \node[secondary!70!darkgray,font=\scriptsize\bfseries]at(1.75,1.8){Cluster B};
-    % Noise
-    \foreach \x/\y in {-0.5/1.5,0.3/0.7,-1.0/0.5,0.8/1.8}
-      {\fill[accentgray,opacity=0.5](\x,\y)circle(0.07);}
-    \node[accentgray,font=\scriptsize]at(-0.1,0.3){noise};
-  \end{tikzpicture}
-
-  \vspace{0.3cm}
-  \begin{tcolorbox}[ybox]
-    \small\color{darkprimary}
-    \textbf{Challenge:} Noisy measurements, partial observations, noisy pose
-    $\to$ need \textbf{SLAM} to find ``real'' cone positions
-  \end{tcolorbox}
-
-\end{beamercolorbox}
-\end{column}
 
 \end{columns}
 
@@ -473,59 +540,35 @@
 \begin{columns}[t,totalwidth=\textwidth]
 
 %% ─ PATH PLANNING ─────────────────────────────────────────────────────────────
-\begin{column}{0.38\textwidth}
+\begin{column}{0.48\textwidth}
+
 \begin{beamercolorbox}[rounded=true,sep=0.30cm,wd=\linewidth]{block title}
   \large\bfseries Path Planning
 \end{beamercolorbox}
-\begin{beamercolorbox}[rounded=true,sep=0.38cm,wd=\linewidth]{block body}
+
+\begin{beamercolorbox}[rounded=true,sep=0.38cm,wd=\linewidth,ht=37.3cm]{block body}
 
 \begin{columns}[t]
 \begin{column}{0.48\linewidth}
 
   \begin{tcolorbox}[pbox]
-    {\color{primary}\bfseries Trackdrive: Delaunay Triangulation}\\[3pt]
+    {\color{primary}\bfseries Trackdrive: Graph Search}\\[3pt]
     \small
-    $\bullet$ Triangulate all cone positions\\
-    $\bullet$ Triangles whose circumcircles contain cones from
-    \textbf{both sides} $\to$ cross-track edges\\
-    $\bullet$ Midpoints $\approx$ centerline segments\\[3pt]
-    \textbf{Filtering:}\\
-    Edge length, triangle angles, track width $>$3\,m, adjacency
+    Idea: Centerline $\in$ Midpoints crossing track:\\
+    \textbf{Delaunay triangulate} all cone positions\\
+    $\bullet$ Filter on edge length, angles, adjacency\\
+    $\bullet$ Build search graph from adjacent midpoints \\
+    $\bullet$ Weight edges by quality (correct lengths, angle, etc.)\\
+    \textbf{Dijkstra} $\to$ path cost \\
+    Longest path with lowest cost $\to$ centerline
   \end{tcolorbox}
 
-  \vspace{0.3cm}
+  \vspace{0.9cm}
   \centering
-  \begin{tikzpicture}[scale=0.95]
-    % Blue cones (left)
-    \foreach \x/\y in {-2.5/0,-2.0/1.2,-1.2/2.2,-0.2/2.8,0.8/2.7}
-      {\fill[primary](\x,\y)circle(0.14);}
-    % Yellow cones (right)
-    \foreach \x/\y in {-2.5/-1.4,-2.0/0.0,-1.2/1.0,-0.2/1.6,0.8/1.6}
-      {\fill[secondary](\x,\y)circle(0.13);}
-    % Delaunay triangles
-    \draw[primary!40,line width=0.8pt]
-      (-2.5,0)--(-2.0,1.2)--(-2.0,0.0)--cycle;
-    \draw[primary!40,line width=0.8pt]
-      (-2.0,1.2)--(-1.2,2.2)--(-1.2,1.0)--cycle;
-    \draw[primary!40,line width=0.8pt]
-      (-1.2,2.2)--(-0.2,2.8)--(-0.2,1.6)--cycle;
-    \draw[primary!40,line width=0.8pt]
-      (-0.2,2.8)--(0.8,2.7)--(0.8,1.6)--cycle;
-    % Cross-track edges (highlighted)
-    \draw[secondary,line width=1.5pt](-2.5,0)--(-2.0,0.0);
-    \draw[secondary,line width=1.5pt](-2.0,1.2)--(-1.2,1.0);
-    \draw[secondary,line width=1.5pt](-1.2,2.2)--(-0.2,1.6);
-    \draw[secondary,line width=1.5pt](-0.2,2.8)--(0.8,1.6);
-    % Centerline midpoints
-    \foreach \x/\y in {-2.5/-0.7,-2.0/1.1,-1.2/1.6,-0.2/2.2,0.8/2.15}
-      {\fill[darkprimary](\x,\y)circle(0.1);}
-    \draw[darkprimary,line width=1.6pt,rounded corners=8pt]
-      (-2.5,-0.7)--(-2.0,1.1)--(-1.2,1.6)--(-0.2,2.2)--(0.8,2.15);
-    \node[darkprimary,font=\scriptsize\bfseries]at(-0.5,-0.3){Centerline (Dijkstra)};
-    \node[accentgray,font=\scriptsize]at(-0.5,-0.75){Delaunay + cross-track edges};
-  \end{tikzpicture}
+  \input{track.tex}
 
 \end{column}
+
 \begin{column}{0.48\linewidth}
 
   \begin{tcolorbox}[pbox]
@@ -533,8 +576,7 @@
     \small
     Fit two lines (one per cone row) using \textbf{RANSAC}:\\
     $\bullet$ Robust to outlier cones\\
-    $\bullet$ Minimal assumptions\\
-    $\bullet$ Avoids sudden turns\\
+    $\bullet$ Utilizes the simplicity of the problem\\
     Centerline = average of both lines
   \end{tcolorbox}
 
@@ -542,122 +584,232 @@
   \begin{tcolorbox}[pbox]
     {\color{primary}\bfseries Skidpad: Optimization}\\[3pt]
     \small
-    Known path from FSG Handbook $\to$ formulate as \textbf{optimization}:\\
+    Known path $\to$ formulate as \textbf{optimization}:\\
     $\bullet$ \textbf{Tukey loss} for outlier robustness\\
-    $\bullet$ Minimize residuals vs. circular arc\\[3pt]
-    \textit{Why not RANSAC?}\\
-    Compound shape hard to model with 3-point primitives
+    $\bullet$ Minimize residuals vs. circular arcs
   \end{tcolorbox}
 
-  \vspace{0.3cm}
+  \vspace{8.8cm}
   % Skidpad circular path
   \centering
-  \begin{tikzpicture}[scale=0.82]
-    \draw[primary!30,line width=6pt](0,0)circle(2.0);
-    \draw[secondary!50,line width=3pt](1.8,0)circle(1.4);
-    \draw[darkprimary,line width=1.5pt,dashed](0,0)circle(2.0);
-    \foreach \a in {0,30,...,330}
-      {\fill[primary](2.0*cos \a, 2.0*sin \a)circle(0.1);}
-    \foreach \a in {0,45,...,315}
-      {\fill[secondary](1.8+1.4*cos \a, 1.4*sin \a)circle(0.09);}
-    \draw[-{Stealth},darkprimary,line width=1.2pt]
-      (0,2.2)arc[start angle=90,end angle=30,radius=2.2];
-    \node[accentgray,font=\scriptsize]at(0,-2.5){Skidpad optimized path};
+
+  \begin{tikzpicture}[scale=0.46]
+
+    % Skidpad parameters
+    \def\innerDia{15.25}    % inner circle diameter
+    \def\outerDia{21.25}    % outer circle diameter
+    \def\radiusInner{7.625} % radius
+    \def\radiusOuter{10.625}
+    \def\centerSep{18.25}   % distance between circle centers
+
+    % Centers
+    \coordinate (Cleft)  at (0,0);
+    \coordinate (Cright) at (\centerSep,0);
+
+    % --- Function to add noise ---
+    \newcommand{\noisycone}[2]{% #1 = center, #2 = color
+        % Box-Muller: generate gaussian with mean 0, std dev 0.2
+        \pgfmathsetmacro{\u}{rand}%
+        \pgfmathsetmacro{\v}{rand}%
+        \pgfmathsetmacro{\r}{sqrt(-2*ln(\u))*0.2}%
+        \pgfmathsetmacro{\theta}{2*3.14159265*\v}%
+        \pgfmathsetmacro{\dx}{\r*cos(\theta)}%
+        \pgfmathsetmacro{\dy}{\r*sin(\theta)}%
+        \fill[#2] ($ (#1) + (\dx,\dy) $) circle (0.3);
+    }
+
+
+    % --- Draw noisy cones ---
+    \foreach \i in {0,...,16} { % 17 inner cones
+        \pgfmathsetmacro{\ang}{\i*360/17}
+        \pgfmathsetmacro{\rad}{\radiusInner}
+        % left inner
+        \pgfmathsetmacro{\noiseX}{(\rad + (rand*0.5-0.25))*cos(\ang)}
+        \pgfmathsetmacro{\noiseY}{(\rad + (rand*0.5-0.25))*sin(\ang)}
+        \fill[primary] ($(Cleft) + (\noiseX,\noiseY)$) circle (0.4);
+
+        % right inner
+        \pgfmathsetmacro{\noiseX}{(\rad + (rand*0.5-0.25))*cos(\ang)}
+        \pgfmathsetmacro{\noiseY}{(\rad + (rand*0.5-0.25))*sin(\ang)}
+        \fill[secondary] ($(Cright) + (\noiseX,\noiseY)$) circle (0.4);
+    }
+
+    \foreach \i in {2,...,11} { % 13 outer cones
+        \pgfmathsetmacro{\ang}{\i*360/13}
+        \pgfmathsetmacro{\rad}{\radiusOuter}
+        % left outer
+        \pgfmathsetmacro{\noiseX}{(\rad + (rand*0.5-0.25))*cos(\ang)}
+        \pgfmathsetmacro{\noiseY}{(\rad + (rand*0.5-0.25))*sin(\ang)}
+        \fill[secondary] ($(Cleft) + (\noiseX,\noiseY)$) circle (0.4);
+
+    }
+    \foreach \i in {2,...,11} { % 13 outer cones
+        \pgfmathsetmacro{\ang}{180+\i*360/13}
+        \pgfmathsetmacro{\rad}{\radiusOuter}
+
+        % right outer
+        \pgfmathsetmacro{\noiseX}{(\rad + (rand*0.5-0.25))*cos(\ang)}
+        \pgfmathsetmacro{\noiseY}{(\rad + (rand*0.5-0.25))*sin(\ang)}
+        \fill[primary] ($(Cright) + (\noiseX,\noiseY)$) circle (0.4);
+    }
+
+    % --- Draw best-fit figure-eight arcs ---
+    \draw[ultra thick, red!70] 
+        (Cleft) circle (\radiusInner); % left inner
+    \draw[ultra thick, red!70]
+        (Cleft) circle (\radiusOuter); % left outer
+    \draw[ultra thick, red!70]
+        (Cright) circle (\radiusInner); % right inner
+    \draw[ultra thick, red!70]
+        (Cright) circle (\radiusOuter); % right outer
+    \draw[ultra thick, red!70] (7.625,10) -- (7.625,-10);
+    \draw[ultra thick, red!70] (10.625,10) -- (10.625,-10);
+
   \end{tikzpicture}
 
 \end{column}
 \end{columns}
 
-\vspace{0.3cm}
-\begin{tcolorbox}[dbox]
-  \color{white}\small\bfseries Path Planning Summary\normalfont:\\
-  \textbf{Trackdrive:} Delaunay triangulation $\to$ cross-track midpoints $\to$ weighted graph $\to$ \textbf{Dijkstra} centerline \quad
-  \textbf{Accel:} RANSAC dual-line fit \quad
-  \textbf{Skidpad:} Circular arc optimization with Tukey loss
-\end{tcolorbox}
 
 \end{beamercolorbox}
 \end{column}
 
 %% ─ TRACKING ──────────────────────────────────────────────────────────────────
-\begin{column}{0.248\textwidth}
-\begin{beamercolorbox}[rounded=true,sep=0.30cm,wd=\linewidth]{block title}
-  \large\bfseries Tracking Controller
-\end{beamercolorbox}
-\begin{beamercolorbox}[rounded=true,sep=0.38cm,wd=\linewidth]{block body}
+\begin{column}{0.50\textwidth}
+  \begin{beamercolorbox}[rounded=true,sep=0.30cm,wd=\linewidth]{block title}
+    \large\bfseries Tracking Controller
+  \end{beamercolorbox}
 
-  \begin{tcolorbox}[ybox]
-    {\color{darkprimary}\bfseries Challenge}\\[3pt]
+  \begin{beamercolorbox}[rounded=true,sep=0.38cm,wd=\linewidth]{block body}
+
+    \vspace{0.3cm}
+    \centering
+    %% ── MPC Description ────────────────────────────────────────────────────
+    \begin{tcolorbox}[pbox]
+    {\color{primary}\bfseries Motion Planning Overview}\\[3pt]
     \small
-    Completely untested on real car.\\
-    Strict lateral deviation constraints ($<$0.5\,m).\\
-    Need robust, tunable controller.
-  \end{tcolorbox}
+    \textbf{Linearised bicycle model MPC}\\
+    Discrete-time model based on Linearised dynamic bicycle model:
+    $[e_y,\ \dot e_y,\ e_\psi,\ \dot\psi]$ with steering input $\delta$.
 
-  \vspace{0.3cm}
-  \begin{tcolorbox}[pbox]
-    {\color{primary}\bfseries Pure Pursuit Controller}\\[3pt]
-    \small
-    Lookahead distance $L_d$ adapts to:\\
-    $\bullet$ Lateral deviation\\
-    $\bullet$ Heading deviation\\
-    $\bullet$ Vehicle speed\\[3pt]
-    \textbf{PID} for speed control\\[3pt]
-    Easy to tune and debug ---
-    ideal for first physical test
-  \end{tcolorbox}
+    \textbf{QP formulation (unconstrained)}\\
+    Precomputed prediction matrices for multiple velocities allow solving
+    $U^{\ast} = -H^{-1} g$
+    via Cholesky factorisation at runtime for real-time performance.
 
-  \vspace{0.3cm}
-  % Pure pursuit diagram
-  \centering
-  \begin{tikzpicture}[scale=0.95]
-    % Reference path
-    \draw[secondary,line width=2pt,dashed]
-      (-3,0)to[out=5,in=175](-0.5,0.4)to[out=-5,in=185](2.5,-0.1);
-    % Vehicle
-    \fill[darkprimary](-2.5,0.1)circle(0.2);
-    % Lookahead circle
-    \draw[primary!50,dashed,line width=0.8pt](-2.5,0.1)circle(1.4);
-    % Lookahead point
-    \fill[secondary!70!darkgray](-1.15,0.28)circle(0.13);
-    % Steering line
-    \draw[-{Stealth},primary,line width=1.5pt](-2.5,0.1)--(-1.2,0.3);
-    \node[primary,font=\scriptsize\bfseries]at(-1.8,0.55){$L_d$};
-    % Heading arrow
-    \draw[-{Stealth},darkprimary,line width=1pt](-2.5,0.1)--(-1.7,0.1);
-    % Lateral error
-    \draw[<->,red!60!black,line width=0.8pt](-2.5,-0.45)--(-2.5,0.05);
-    \node[red!60!black,font=\tiny]at(-2.0,-0.22){$e_y$};
-    % Track boundaries (cones)
-    \foreach \x/\y in {-2.8/0.9,-1.8/1.1,-0.8/1.2,0.2/1.1,1.2/1.0,2.2/0.8}
-      {\fill[primary](\x,\y)circle(0.09);}
-    \foreach \x/\y in {-2.8/-0.7,-1.8/-0.5,-0.8/-0.5,0.2/-0.5,1.2/-0.6,2.2/-0.7}
-      {\fill[secondary](\x,\y)circle(0.09);}
-    \node[accentgray,font=\small]at(0,-1.2){Pure Pursuit: adaptive $L_d$};
-  \end{tikzpicture}
+    \textbf{Path-relative state space}\\
+    Vehicle pose is projected onto a spline track to compute states and the desired state is projected to go along the spline at the current speed.\\[4pt]
+    Desired state = $[e_y = 0,\ \dot e_y = 0, \ e_\psi = 0,\ \dot\psi = \kappa \cdot v]$\\
+    \textbf{GG-ellipse speed planner}\\
+    Curvature-based speed limits are refined using a forward/backward pass
+    over a friction ellipse to enforce combined lateral/longitudinal limits.
 
-  \vspace{0.3cm}
-  \begin{tabular}{>{\bfseries}lc}
-    \toprule
-    \thead{Parameter} & \thead{Value}\\
-    \midrule
-    \trA{Max lat. deviation} & \trA{$<$0.5 m}\\
-    \trB{Speed control}      & \trB{PID}\\
-    \trA{Lookahead inputs}   & \trA{$e_y$, $e_\psi$, $v$}\\
-    \bottomrule
-  \end{tabular}
+    \textbf{Longitudinal control}\\
+    PID controler based on the desired speed of the GG-Plot and the current speed from odometry. The GGplot results is refined by using lookahead based on the current speed to slow down before corners.
+    \end{tcolorbox}
 
-  \vspace{0.3cm}
-  \begin{tcolorbox}[ybox]
-    \small\color{darkprimary}
-    \textbf{Rationale:} Pure pursuit is simple, robust, and
-    easy to tune --- ideal for a system with no prior real-car validation.
-  \end{tcolorbox}
 
-\end{beamercolorbox}
+    \vspace{0.3cm}
+    \raggedright
+    %% ── Diagrams side by side ───────────────────────────────────────────────
+    \noindent
+    \hspace{0.01\linewidth}
+    \begin{minipage}[t]{0.35\linewidth}
+      \centering
+      %% GG-Plot
+      \begin{tikzpicture}[scale=3.45]
+        % Axes
+        \draw[-{Stealth},accentgray,line width=0.9pt](-1.9,0)--(2.1,0)
+          node[right,font=\small,accentgray]{$a_y$};
+        \draw[-{Stealth},accentgray,line width=0.9pt](0,-1.9)--(0,2.1)
+          node[above,font=\small,accentgray]{$a_x$};
+        % Axis ticks 
+        \draw[accentgray,line width=2.3pt] ( 1.71,0.06) -- ( 1.71,-0.06);
+        \draw[accentgray,line width=2.3pt] (-1.71,0.06) -- (-1.71,-0.06);
+        \draw[accentgray,line width=2.3pt] (0.06, 1.21) -- (-0.06, 1.21);
+        \draw[accentgray,line width=2.3pt] (0.06,-1.21) -- (-0.06,-1.21);
+        \node[accentgray,font=\scriptsize] at ( 1.9,-0.18){$a_{y,\max}$};
+        \node[accentgray,font=\scriptsize,anchor=east] at (0.58, 1.25){$a_{x,\max}$};
+        \draw[primary,dashed,line width=1pt] (0.73,1.08) -- (0.73,0);
+        \draw[primary,dashed,line width=1pt] (0.73,1.08) -- (0,1.08);
+        % GG friction circle
+        \draw[secondary,line width=2.2pt,dashed] (0,0) ellipse (1.7 and 1.2);
+        \fill[secondary!10,opacity=0.5] (0,0) ellipse (1.7 and 1.2);
+        % Shade interior
+        % Several speed-limit operating points at different corner radii
+        % Highlight main op point
+        \fill[primary](0.73,1.08) circle(0.04);
+        \draw[-{Stealth},primary,line width=1.4pt](0,0)--(0.73,1.08);
+        \node[primary,font=\scriptsize\bfseries,anchor=south west] at (0.92,1.22)
+          {op.\ pt};
+        % v_max annotation — right side
+        %\draw[<->,red!60!black,line width=1.0pt](1.65,0.0)--(1.65,-1.50);
+        %\node[red!60!black,font=\scriptsize\bfseries,anchor=west] at (1.68,-0.75)
+        %  {$v_{\max}$};
+        % Caption
+        \node[accentgray,font=\small\bfseries] at (0.1,-2.2)
+          {GG-plot $\to$ $v_{\max}(s)$};
+      \end{tikzpicture}
+    \end{minipage}%
+    \begin{minipage}[t]{0.49\linewidth}
+      \centering
+      %% Lateral MPC track diagram
+      \begin{tikzpicture}[scale=4.55]
+        % Track boundaries (cones)
+        \foreach \x/\y in {-2.8/0.95,-1.8/1.15,-0.8/1.25,0.2/1.15,1.2/1.05,2.2/0.85}
+          {\fill[primary](\x,\y) circle(0.10);}
+        \foreach \x/\y in {-2.8/-0.75,-1.8/-0.55,-0.8/-0.55,0.2/-0.55,1.2/-0.65,2.2/-0.75}
+          {\fill[secondary](\x,\y) circle(0.10);}
+        % Reference path
+        \draw[secondary,line width=2.2pt,dashed]
+          (-3,0) to[out=5,in=175] (-0.5,0.42) to[out=-5,in=185] (2.5,-0.1);
+        % Vehicle body (rect)
+        \fill[darkprimary,rounded corners=2pt, rotate=20]
+          (-2.92,0.65) rectangle (-2.18,1.13);
+        % Horizon preview dots
+        \foreach \x/\y [count=\i] in {-2.0/0.21,-1.5/0.34,-1.0/0.42,-0.5/0.42,0.0/0.35} {
+          \coordinate (P\i) at (\x,\y);
+          \fill[primary!65] (P\i) circle(0.03);
+        }
+        \draw[->, ultra thick, red!65] (-2.36,0.08) -- (P1);
+        \foreach \i in {1,...,4} { % 4 because we have 5 points
+            \draw[->, ultra thick, red!65] (P\i) -- (P\the\numexpr\i+1\relax);
+        }
+        % MPC predicted path
+        % Horizon brace
+        \draw[<->,primary!80,line width=0.9pt](-2.5,0.75)--(0.0,0.75);
+          \node[primary,font=\small\bfseries] at (-1.25,0.90){\textbf{Horizon} $N$};
+        % Lateral error
+        %\draw[<->,red!60!black,line width=1.0pt](-2.5,-0.50)--(-2.5,0.05);
+        %\node[red!60!black,font=\scriptsize\bfseries,anchor=west] at (-2.38,-0.22)
+        %  {$e_y$};
+        % Heading error arc
+        %\draw[-{Stealth},orange,line width=1.1pt]
+        %  (-2.5,0.10) arc[start angle=180,end angle=153,radius=0.65];
+        %\node[orange,font=\scriptsize\bfseries,anchor=east] at (-3.05,0.55)
+        %  {$e_\psi$};
+        % Caption
+        \node[accentgray,font=\small\bfseries] at (0,-1.25)
+          {Lateral MPC: predictive horizon};
+      \end{tikzpicture}
+    \end{minipage}
+
+    \vspace{0.3cm}
+
+    %% ── Rationale ───────────────────────────────────────────────────────────
+    \begin{tcolorbox}[ybox]
+      \small\color{darkprimary}
+      \textbf{Rationale:} Decoupling lateral and longitudinal control allows us to solve two simpler problem
+      rather than one complex one. A linear MPC gives a reliable and robust longitudonal control while
+      being much simpler than a nonlinear one. The GG-ellipse speed planner allows us to enforce combined 
+      slip limits without needing a complex tire model.
+    \end{tcolorbox}
+
+  \end{beamercolorbox}
+
 \end{column}
-
 %% ─ SIMULATOR ─────────────────────────────────────────────────────────────────
+\begin{comment}
 \begin{column}{0.355\textwidth}
 \begin{beamercolorbox}[rounded=true,sep=0.30cm,wd=\linewidth]{block title}
   \large\bfseries Simulation Environment
@@ -750,6 +902,7 @@
 
 \end{beamercolorbox}
 \end{column}
+\end{comment}
 
 \end{columns}
 \vspace{0.3cm}
